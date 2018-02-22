@@ -65,6 +65,22 @@ the _checklic_ binary.
 
 Repeat the same process on all your Sensors.
 
+### Generate your license
+
+For a FSM license run:
+
+```bash
+go run sflicgen.go -l 66:00:11:22:33:44:55 -k ../crypto/private.pem -fsm
+```
+
+and for a sensor license run:
+
+```bash
+go run sflicgen.go -l 66:00:11:22:33:44:55 -k ../crypto/private.pem -n 6 -mid 63E -mod 3D8120
+```
+
+Upload it to your FSM and enjoy
+
 
 ## Known models:
 
