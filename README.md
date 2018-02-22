@@ -68,5 +68,14 @@ Repeat the same process on all your Sensors.
 
 ## Known models:
 
-* 63G - 3D7110
-* 63E - 3D8120
+| Model ID | Model Name |
+|----------|------------|
+| 63E      | 3D8120     |
+| 63F      | 3D7120     |
+| 63G      | 3d7110     |
+| 63H      | 3D7030     |
+| 63J      | 3D7010     |
+| 63L      | 3D7125     |
+| 63P      | 3D7150     |
+
+
