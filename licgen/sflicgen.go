@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	CAPABILITIES = "PROTECT+CONTROL"
+	CAPABILITIES_BASE = "PROTECT+CONTROL"
 	// CAPABILITIES = "PROTECT+CONTROL+URLFilter"
 	// CAPABILITIES = "PROTECT+CONTROL+URLFilter+VPN"
 	// CAPABILITIES = "PROTECT+CONTROL+URLFilter+VPN+SSL"
@@ -35,8 +35,6 @@ model_info 66E:50000:HOST,66E:50000:USER;
 66E VirtualDC64bit;
 `
 
-// 63G:1:PROTECT+CONTROL
-// 63G 3D7110
 var licSensor = `model 0x42;
 expires forever;
 node %s;
@@ -44,6 +42,25 @@ serial_number %s;
 feature_id 0xA;
 series_3_model_info %s:%s:%s;
 %s %s;
+`
+
+var licURL = `model 0x42;
+expires forever;
+node %s;
+serial_number %s;
+feature_id 0xB;
+model_info %s:%s:URLFilter;
+%s %s;
+license_type SUBSCRIPTION;
+`
+
+var licAMP = `model 0x42;
+expires forever;
+node %s;
+serial_number %s;
+feature_id 0xA;
+series_3_model_info 63L:1:MALWARE;
+63L 3D7125;
 `
 
 var licHeader = "--- BEGIN SourceFire Product License :\n"
@@ -56,6 +73,7 @@ func main() {
 	modelNameFlag := flag.String("mod", "3D7110", "Sets the sensor model number")
 	numberOfLicsFlag := flag.String("n", "1", "Number of sensors to apply the license")
 	isFsmLicenseFlag := flag.Bool("fsm", false, "Generates a FSM license [default sensor license]")
+	isUrlLicenseFlag := flag.Bool("url", false, "Generates a URL subscription license")
 	flag.Parse()
 
 	kr := regexp.MustCompile("^([0-9A-Fa-f]{2}:){6}([0-9A-Fa-f]{2})$")
@@ -66,12 +84,27 @@ func main() {
 		os.Exit(1)
 	}
 
+	if *isFsmLicenseFlag && *isUrlLicenseFlag {
+		fmt.Println("fsm and url licenses ar not compatible.")
+		os.Exit(1)
+	}
+
 	sn := GenSN()
 	larr := strings.SplitN(strings.ToUpper(*licenseKeyFlag), ":", 2)
 
 	var licText string
 	if *isFsmLicenseFlag {
 		licText = fmt.Sprintf(licFSM, larr[1], sn)
+	} else if *isUrlLicenseFlag {
+		licText = fmt.Sprintf(
+			licURL,
+			larr[1],
+			sn,
+			*modelIdFlag,
+			*numberOfLicsFlag,
+			*modelIdFlag,
+			*modelNameFlag,
+		)
 	} else {
 		licText = fmt.Sprintf(
 			licSensor,
@@ -79,7 +112,7 @@ func main() {
 			sn,
 			*modelIdFlag,
 			*numberOfLicsFlag,
-			CAPABILITIES,
+			CAPABILITIES_BASE,
 			*modelIdFlag,
 			*modelNameFlag,
 		)
